@@ -266,12 +266,16 @@ async def websocket_tracking(websocket: WebSocket, solicitud_id: str):
                 # Guardar en Redis con TTL de 30 segundos
                 redis_key = f"tracking:{solicitud_id}"
                 if redis_client:
-                    await redis_client.set(redis_key, json.dumps(payload), ex=30)
+                    try:
+                        await redis_client.set(redis_key, json.dumps(payload), ex=30)
+                    except Exception as e:
+                        print(f"Advertencia: No se pudo conectar a Redis: {e}")
                 
             # Broadcast a todos los conectados (ubicación o cambio de estado)
             await manager.broadcast_to_solicitud(solicitud_id, payload)
                 
     except WebSocketDisconnect:
         manager.disconnect(websocket, solicitud_id)
-    except json.JSONDecodeError:
-        pass # Ignorar JSON inválido
+    except Exception as e:
+        print(f"Error en websocket: {e}")
+        manager.disconnect(websocket, solicitud_id)
