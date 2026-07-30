@@ -49,6 +49,24 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 from fastapi.responses import RedirectResponse
 
+@app.get("/init-db", include_in_schema=False)
+async def init_db():
+    """
+    Endpoint temporal para inicializar la base de datos en la nube.
+    Lee el archivo init.sql y lo ejecuta.
+    """
+    try:
+        with open("database/init.sql", "r", encoding="utf-8") as f:
+            sql_statements = f.read().split(';')
+        
+        async with engine.begin() as conn:
+            for statement in sql_statements:
+                if statement.strip():
+                    await conn.execute(text(statement))
+        return {"mensaje": "Base de datos inicializada correctamente con tablas y datos de prueba."}
+    except Exception as e:
+        return {"error": str(e)}
+
 # ----------------- ENDPOINTS REST ----------------- #
 
 @app.get("/", include_in_schema=False)
