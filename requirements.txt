@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+asyncpg
+redis
+pydantic
+pydantic[email]
+pyjwt
+websockets
+geoalchemy2
+sqlalchemy

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pronto MVP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=2">
+</head>
+
+<body>
+    <div class="app-container">
+        <header>
+            <div class="logo">
+                <img src="logo-light.png" alt="Pronto Logo" class="logo-img light-logo">
+                <img src="logo-dark.png" alt="Pronto Logo" class="logo-img dark-logo">
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <button id="theme-toggle" class="btn btn-sm btn-secondary"
+                    style="border-radius: 50%; width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;"
+                    title="Cambiar modo oscuro/claro">
+                    <span id="theme-icon">🌙</span>
+                </button>
+                <div id="user-info" class="hidden">
+                    <span class="badge" id="user-role"></span>
+                    <button id="logout-btn" class="btn btn-sm btn-secondary">Salir</button>
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content">
+            <!-- Login View -->
+            <section id="view-login" class="view active">
+                <div class="card">
+                    <h2>Iniciar Sesión</h2>
+                    <p>Bienvenido a Pronto</p>
+                    <form id="login-form">
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="email" value="cliente@pronto.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Contraseña</label>
+                            <input type="password" id="password" value="12345" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-full">Ingresar</button>
+                    </form>
+                    <div class="demo-hints">
+                        <small>Cliente: cliente@pronto.com | Técnico: tecnico@pronto.com</small>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Cliente View -->
+            <section id="view-cliente" class="view hidden">
+                <div class="card">
+                    <h2>Pedir Servicio</h2>
+                    <form id="solicitud-form">
+                        <div class="form-group">
+                            <label>Oficio Requerido</label>
+                            <select id="oficio" required>
+                                <option value="Plomería">Plomería</option>
+                                <option value="Electricidad">Electricidad</option>
+                                <option value="Albañilería">Albañilería</option>
+                                <option value="Mecánica">Mecánica</option>
+                                <option value="Limpieza">Limpieza</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-full">Solicitar Técnico Ahora</button>
+                    </form>
+                </div>
+
+                <div class="card mt-4">
+                    <h3>Billetera Virtual</h3>
+                    <p>Saldo disponible: $<span id="wallet-balance">1000.00</span></p>
+                    <div class="flex-between">
+                        <button class="btn btn-sm btn-secondary w-full" style="margin-right: 5px;" disabled>Ingresar
+                            Saldo</button>
+                        <button class="btn btn-sm btn-secondary w-full" style="margin-left: 5px;" disabled>Retirar
+                            Saldo</button>
+                    </div>
+                </div>
+
+                <div id="busqueda-resultados" class="hidden mt-4">
+                    <h3>Técnicos Cercanos</h3>
+                    <ul id="tecnicos-list" class="list"></ul>
+                </div>
+
+                <div id="tracking-container" class="card mt-4 hidden highlight-border">
+                    <div class="flex-between">
+                        <h3 id="client-status-title">En camino</h3>
+                        <span class="status-pulse" id="client-pulse"></span>
+                    </div>
+                    <p id="tracking-info">Esperando ubicación...</p>
+                    <div class="map-placeholder" id="map-placeholder">
+                        <div class="marker" id="client-marker">🏠</div>
+                        <div class="marker" id="tech-marker">🚗</div>
+                    </div>
+                    <div id="payment-container" class="hidden mt-4">
+                        <p class="small-text text-center">El servicio tiene un costo de $50.</p>
+                        <button id="pay-btn" class="btn btn-primary w-full mt-2">Pagar Servicio</button>
+                        <div id="payment-success-msg" class="hidden mt-2" style="background-color: var(--accent); color: white; padding: 0.75rem; text-align: center; font-size: 1rem; border-radius: 8px; font-weight: 600;">
+                            ¡Pago realizado con éxito! ✅
+                        </div>
+                    </div>
+
+                    <button id="client-restart-btn" class="btn btn-secondary w-full mt-4 hidden">Pedir otro
+                        servicio</button>
+                </div>
+            </section>
+
+            <!-- Técnico View -->
+            <section id="view-tecnico" class="view hidden">
+                <div class="card">
+                    <h2>Panel del Técnico</h2>
+                    <div class="status-toggle">
+                        <span id="tech-status" class="badge">DISPONIBLE</span>
+                    </div>
+
+                    <div id="tech-pending-requests" class="mt-4">
+                        <button id="refresh-requests-btn" class="btn btn-sm btn-secondary w-full">Buscar Solicitudes
+                            Pendientes</button>
+                        <ul id="pending-requests-list" class="list mt-2"></ul>
+                    </div>
+
+                    <div id="tech-tracking-controls" class="mt-4 hidden">
+                        <h3 id="tech-job-title">Servicio Activo</h3>
+                        <p id="tech-sim-text">Simular flujo de trabajo</p>
+
+                        <div class="map-placeholder highlight-border hidden" id="tech-map-placeholder"
+                            style="margin-top: 10px; margin-bottom: 10px;">
+                            <div class="marker" id="tech-center-marker">🚗</div>
+                            <div class="marker" id="client-moving-marker">🏠</div>
+                        </div>
+
+                        <button id="start-tracking-btn" class="btn btn-accent w-full mt-2">1. Ir al cliente (En
+                            Camino)</button>
+                        <button id="arrive-btn" class="btn btn-primary w-full mt-2 hidden">2. Llegué - Iniciar
+                            Trabajo</button>
+                        <button id="finish-btn" class="btn btn-accent w-full mt-2 hidden">3. Terminar Trabajo</button>
+                        <button id="tech-restart-btn" class="btn btn-secondary w-full mt-2 hidden">Volver a
+                            Pendientes</button>
+                        <p id="tech-coords" class="small-text mt-2"></p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="app.js?v=5"></script>
+</body>
+
+</html>
