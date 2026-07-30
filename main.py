@@ -9,7 +9,15 @@ from redis.asyncio import Redis
 from models import LoginRequest, TokenResponse, SolicitudCreate, TecnicoCercanoResponse, SolicitudEstadoUpdate, SolicitudResponse
 from contextlib import asynccontextmanager
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://pronto_user:pronto_password@localhost:5432/pronto_db")
+DATABASE_URL_ENV = os.getenv("DATABASE_URL", "postgresql+asyncpg://pronto_user:pronto_password@localhost:5432/pronto_db")
+# Fix para Render/Neon que entregan URL con postgres:// o postgresql:// en lugar de postgresql+asyncpg://
+if DATABASE_URL_ENV.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL_ENV.replace("postgres://", "postgresql+asyncpg://", 1)
+elif DATABASE_URL_ENV.startswith("postgresql://"):
+    DATABASE_URL = DATABASE_URL_ENV.replace("postgresql://", "postgresql+asyncpg://", 1)
+else:
+    DATABASE_URL = DATABASE_URL_ENV
+
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
 
 # Inicialización de BD
