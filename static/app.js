@@ -1,7 +1,7 @@
-// Obtener el host dinámicamente para soportar acceso desde otros dispositivos en red local
-const host = window.location.hostname || 'localhost';
-const port = window.location.port ? `:${window.location.port}` : ':8000';
-const protocol = window.location.protocol;
+const isFileProtocol = window.location.protocol === 'file:';
+const host = isFileProtocol ? 'localhost' : window.location.hostname;
+const protocol = isFileProtocol ? 'http:' : window.location.protocol;
+const port = window.location.port ? `:${window.location.port}` : (host === 'localhost' ? ':8000' : '');
 const wsProtocol = protocol === 'https:' ? 'wss:' : 'ws:';
 
 const API_URL = `${protocol}//${host}${port}`;
