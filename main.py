@@ -33,7 +33,7 @@ async def lifespan(app: FastAPI):
     await redis_client.close()
     await engine.dispose()
 
-app = FastAPI(title="Pronto MVP", description="Plataforma de servicios a domicilio bajo demanda", lifespan=lifespan)
+app = FastAPI(title="Pronto", description="Plataforma de servicios a domicilio bajo demanda", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
